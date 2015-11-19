@@ -118,6 +118,33 @@ describe('<md-toolbar>', function() {
     expect(element.find('md-toolbar').length).toBe(0);
   }));
 
+  iit('works with ng-show', inject(function($$rAF) {
+    var toolbar = '  <md-toolbar style="background: red;" md-scroll-shrink="true">test</md-toolbar>';
+    var template = '<div layout="column" style="height:600px">' +
+      '  <md-content flex><div style="height: 5000px;"></div></md-content>' +
+      '</div>';
+
+    build(toolbar);
+
+    var toolbarContainer = element;
+
+    document.body.appendChild(toolbarContainer[0]);
+
+    // Change the ng-show to add the toolbar which then injects a scrollShrink
+    // on the mdContent
+    pageScope.$apply('shouldShowToolbar = true');
+    expect(getComputedStyle(toolbarContainer.find('md-toolbar')[0]).display).toEqual('flex');
+    toolbarContainer.find('md-content').scrollTop = 100;
+    toolbarContainer.find('md-content').triggerHandler('scroll');
+    $$rAF.flush();
+
+    expect(getComputedStyle(toolbarContainer.find('md-toolbar')[0]).marginTop > 0).toBeTruthy();
+    // Change the ng-if to remove the toolbar
+    //pageScope.$apply('shouldShowToolbar = false');
+    expect(getComputedStyle(toolbarContainer.find('md-toolbar')[0]).display).toEqual('none');
+    expect(getComputedStyle(toolbarContainer.find('md-toolbar')[0]).marginTop).toEqual('0px');
+  }));
+
   // The toolbar is like a container component, so we want to make sure it works with ng-controller
   it('works with ng-controller', inject(function($exceptionHandler) {
     build(

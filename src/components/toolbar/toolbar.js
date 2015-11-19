@@ -101,6 +101,12 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming, $animate) {
 
         attr.$observe('mdScrollShrink', onChangeScrollShrink);
 
+        // If the toolbar has ngShow or ngHide we need to update height immediately as it changed
+        // and not wait for $mdUtil.debounce to happen
+
+        attr.$observe('ngShow', updateToolbarHeight);
+        attr.$observe('ngHide', updateToolbarHeight);
+
         // If the scope is destroyed (which could happen with ng-if), make sure
         // to disable scroll shrinking again
 
